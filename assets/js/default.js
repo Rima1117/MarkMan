@@ -11,7 +11,7 @@ function openExternalLinksInNewTab(element) {
     });
   }
   
-  const contentElements = document.getElementsByClassName('post');
+  const contentElements = document.getElementsByClassName('html');
   if (contentElements.length > 0) {
     openExternalLinksInNewTab(contentElements[0]);
   }

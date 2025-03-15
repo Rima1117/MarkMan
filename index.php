@@ -6,7 +6,7 @@ $config = loadConfig('config.md');
 $pageList = getPageList($config);
 ?>
 <!DOCTYPE html>
-<html oldpage="/">
+<html lang="ja" oldpage="/" class="html">
 
 <head>
     <meta charset="UTF-8">

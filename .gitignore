@@ -2,3 +2,5 @@
 /lib/Markdown.php
 /lib/bot-ua.json
 .htaccess
+/post-md/*
+!/post-md/hello-world

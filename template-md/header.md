@@ -9,7 +9,7 @@
 </div>
 <div class="nav-content">
 
-[最近の記事](/)
+[ダウンロード](https://github.com/Rima1117/MarkMan/releases)
 
 </div>
 </header>

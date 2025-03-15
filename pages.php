@@ -42,7 +42,7 @@ if (preg_match('/' . $pattern_list_string . '/', $ua)) {
 }
 ?>
 <!DOCTYPE html>
-<html oldpage="/">
+<html lang="ja" oldpage="/" class="html">
 
 <head>
     <meta charset="UTF-8">
