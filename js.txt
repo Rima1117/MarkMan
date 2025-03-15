@@ -1,0 +1,4 @@
+/assets/js/default.js
+https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js
+https://cdn.jsdelivr.net/npm/marked@latest/lib/marked.umd.min.js
+/assets/js/link.js

@@ -1,0 +1,2 @@
+name: システム
+id: system
