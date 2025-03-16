@@ -1,4 +1,3 @@
-<!-- Hello Markdown World!-->
 <!-- このヘッダーテンプレートは自由に編集することができます。-->
 
 <header class="nav">

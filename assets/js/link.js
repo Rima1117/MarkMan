@@ -2,179 +2,287 @@ let config;
 let post_uri;
 
 async function initialize() {
-    config = await loadConfig();
-    const parts = config.page_uri.split("/");
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('p')) {
-        post_uri = "/pages.php?p="
-    } else {
-        post_uri = "/" + parts[1] + "/";
-    }
-    if (post_uri != "/" && window.location.pathname + window.location.search.startsWith(post_uri)) {
-        const url = window.location.pathname;
-        if (post_uri.includes(".php")) {
-            var postId = urlParams.get('p');
-        } else {
-            const parts = url.split("/");
-            var postId = parts[2];
+    currrent = location.href;
+    try {
+        config = await loadConfig();
+        const urlParams = new URLSearchParams(window.location.search);
+        let pageUri = config.page_uri || "pages.php?p=$id";
+        const isPhpPage = pageUri.includes("pages.php");
+
+        post_uri = urlParams.has('p') && isPhpPage ? "/pages.php?p=" : pageUri.replace("$id", "").replace(/\/+/g, "/"); // 余分なスラッシュを削除
+
+        if (post_uri !== "/" && window.location.href.startsWith(new URL(post_uri, window.location.origin).href)) {
+            const pathParts = window.location.pathname.split("/").filter(part => part !== "");
+            const postId = urlParams.get('p') || pathParts.pop();
+
+            if (!postId) {
+                // postId が空文字列の場合の処理
+                throw new Error("postId is empty");
+            }
+
+            await loadPostPage(postId, window.location.pathname);
         }
-        $("main").hide()
-        await loadPostPage(postId, url)
-            .then(() => {
-                $("main").fadeIn(300);
-            })
-            .catch((error) => {
-                console.error("投稿ページの読み込みに失敗しました:", error);
-                $("main").show();
+
+        $("main,.footer-nav").fadeIn(300);
+
+    } catch (error) {
+        if (config.error_show == 1) {
+            console.error("投稿ページの読み込みに失敗しました。404ページを表示します。エラー:", error);
+        } else {
+            console.error("投稿ページの読み込みに失敗しました。404ページを表示します。");
+        }
+        const nfPage = config.page_ext == 1 ? "/404.php" : "/404/";
+        await loadContent(nfPage).then(() => {
+            $("main,.footer-nav").fadeIn(300, function () {
+                if (window.location.pathname + window.location.search !== nfPage) {
+                    window.history.replaceState({}, "", currrent);
+                }
             });
+        });
     }
 }
 
 initialize();
 
-$(document).on('click', 'a[href^="/"]', function (event) {
+$(document).on('click', 'a[href^="/"]', async function (event) {
     const href = $(this).attr('href');
     event.preventDefault();
-    loadContent(href);
-    return false;
+    await loadContent(href);
 });
 
 window.addEventListener('popstate', async function (event) {
     const href = window.location.pathname + window.location.search;
     event.preventDefault();
     await loadContent(href);
-    return false;
 });
 
-function loadConfig(configPath = "/config.md") {
-    return $.ajax({
-        url: configPath + "?v=" + Date.now(),
-        dataType: "text",
-    }).then(function (data) {
+async function loadConfig(configPath = "/config.md") {
+    try {
+        const response = await $.ajax({
+            url: configPath + "?v=" + Date.now(),
+            dataType: "text",
+        });
+
         const config = {};
-        const lines = data.split("\n");
-        lines.forEach(function (line) {
+        const lines = response.split("\n");
+
+        for (const line of lines) {
             const trimmedLine = line.trim();
-            if (trimmedLine.length > 0 && trimmedLine.indexOf(":") !== -1) {
-                const parts = trimmedLine.split(":");
-                if (parts.length >= 2) {
-                    const key = parts[0].trim();
-                    const value = parts.slice(1).join(":").trim();
-                    config[key] = value;
+
+            if (trimmedLine.startsWith("#") || trimmedLine.length === 0) {
+                continue;
+            }
+
+            if (trimmedLine.includes(":")) {
+                const [key, ...valueParts] = trimmedLine.split(":");
+                const value = valueParts.join(":").trim();
+                const trimmedKey = key.trim();
+
+                if (!isNaN(value)) {
+                    config[trimmedKey] = Number(value);
+                } else if (value.toLowerCase() === "true") {
+                    config[trimmedKey] = true;
+                } else if (value.toLowerCase() === "false") {
+                    config[trimmedKey] = false;
+                } else {
+                    config[trimmedKey] = value;
                 }
             }
-        });
+        }
+
         return config;
-    });
+    } catch (error) {
+        console.error("設定ファイルの読み込みに失敗しました:", error);
+        return {};
+    }
 }
 
 async function getPostContent(pageId) {
+    if (!config || !config.pages_dir || !config.page_body) {
+        console.error("設定オブジェクトが不正です。");
+        return null;
+    }
+
     const pagesDir = config.pages_dir;
     const bodyFileName = config.page_body;
     const postPath = `/${pagesDir}/${pageId}/${bodyFileName}?v=${Date.now()}`;
 
-    return $.ajax({
-        url: postPath,
-        dataType: "text",
-    }).then(function (markdown) {
+    try {
+        const markdown = await $.ajax({
+            url: postPath,
+            dataType: "text",
+        });
+
         const html = marked.parse(markdown);
+
         return html;
-    });
+    } catch (error) {
+        console.error("コンテンツの取得に失敗しました。404ページに移動します。\nエラー:", error);
+        const nfPage = config.page_ext == 1 ? "/404.php" : "/404/";
+        await loadContent(nfPage).then(() => {
+            $("main,.footer-nav").fadeIn(300, function () {
+                if (window.location.pathname + window.location.search !== nfPage) {
+                    window.history.replaceState({}, "", currrent);
+                }
+            });
+        });
+        return null;
+    }
 }
 
 async function getPostMeta(pageId) {
+    if (!config || !config.pages_dir || !config.page_info) {
+        console.error("設定オブジェクトが不正です。");
+        return null;
+    }
+
     const pagesDir = config.pages_dir;
     const metaFileName = config.page_info;
     const postPath = `/${pagesDir}/${pageId}/${metaFileName}?v=${Date.now()}`;
-    return await loadConfig(postPath);
+
+    try {
+        const meta = await loadConfig(postPath);
+        return meta;
+    } catch (error) {
+        console.error("記事のメタデータの取得に失敗しました:", error);
+        return null;
+    }
 }
 
 async function loadPostPage(postId, url) {
     if (postId == null) {
-        return
+        return;
     }
-    if ($("html").attr("oldpage") != "/") {
-        return
-    } else {
-        $("html").attr("oldpage", "//")
+
+    if (!config || !config.templates_dir || !config.pages_dir || !config.site_name) {
+        console.error("設定オブジェクトが不正です。");
+        return;
     }
-    const postContent = await getPostContent(postId)
-    const postMeta = await getPostMeta(postId)
-    $("main").html('<div class="post">' +
-        '<h1 class="post-title"></h1>' +
-        '<p class="post-date"></h1>' +
-        '<div class="post-body"></div>' +
-        '</div>')
-    $(".post .post-title").text(postMeta.title)
-    $(".post .post-body").html(postContent)
-    if (!post_uri.includes(".php")) {
-        url_post_id = post_uri + postId + "/"
-    } else {
-        url_post_id = post_uri.replace("$id/", "")  + postId // URLの文字列に「$id/」が混入するバグを防ぐため
+
+    const currentPage = $("html").attr("oldpage");
+    if (currentPage !== "/") {
+        return;
     }
-    window.history.pushState({}, postMeta.title + " - " + config.site_name,  url_post_id);
-    $("html").attr("oldpage", "/")
-    document.title = postMeta.title + " - " + config.site_name;
-    $(".post .post-date").text(new Date(postMeta.date).toLocaleDateString())
-    const contentElements = document.getElementsByClassName('post');
-    if (contentElements.length > 0) {
-        openExternalLinksInNewTab(contentElements[0]);
+
+    $("html").attr("oldpage", "//");
+
+    try {
+        const postContent = await getPostContent(postId);
+        const postMeta = await getPostMeta(postId);
+
+        $("main").html(`
+            <div class="post">
+                <div class="post-top"></div>
+                <div class="post-body"></div>
+            </div>
+        `);
+
+        const headerPath = `/${config.templates_dir}/post-header.md?v=${Date.now()}`;
+        const markdown = await $.ajax({
+            url: headerPath,
+            dataType: "text",
+        });
+
+        const pagesDir = config.pages_dir;
+        const thumbDir = `/${pagesDir}/${postId}/`;
+        const placeholders = [
+            { from: '$post_title', to: postMeta.title },
+            { from: '$post_thumb', to: String(postMeta.titlethumb).startsWith('/') ? postMeta.titlethumb : thumbDir + postMeta.titlethumb },
+            { from: '$post_create_date', to: new Date(postMeta.date).toLocaleDateString() },
+            { from: '$post_edit_date', to: new Date(postMeta.editdate).toLocaleDateString() },
+        ];
+
+        let postHeadHtml = marked.parse(markdown);
+        placeholders.forEach(replacement => {
+            postHeadHtml = postHeadHtml.replaceAll(replacement.from, replacement.to);
+        });
+
+        if (!postMeta.titlethumb) {
+            postHeadHtml = postHeadHtml.replace(/<div class="post-thumb">.*?<\/div>/s, '');
+        }
+        if (!postMeta.editdate) {
+            postHeadHtml = postHeadHtml.replace(/<span class="post-edited" .*?<\/span>/s, '');
+        }
+
+        $("main .post .post-top").html(postHeadHtml);
+        $("main .post .post-body").html(postContent);
+
+        let url_post_id;
+        if (!url.includes(".php")) {
+            url_post_id = url.startsWith('/') ? url : '/' + url;
+        } else {
+            url_post_id = config.page_uri.replace("$id", "") + postId;
+        }
+
+        window.history.pushState({}, postMeta.title + " - " + config.site_name, url_post_id);
+        $("main,.footer-nav").fadeIn(300);
+        $("html").attr("oldpage", "/");
+        document.title = postMeta.title + " - " + config.site_name;
+
+        const contentElements = document.getElementsByClassName('post');
+        if (contentElements.length > 0) {
+            if (typeof pageInit === 'function') {
+                pageInit(contentElements[0]);
+            } else {
+                console.error("pageInit 関数が定義されていません。");
+            }
+        }
+    } catch (error) {
+        console.error("投稿ページのロードに失敗しました:", error);
+        $("html").attr("oldpage", "/");
     }
 }
 
 async function loadContent(url) {
-    const parts = config.page_uri.split("/");
-    let query = url.substring(url.indexOf('?'));
-    const urlParams = new URLSearchParams(query);
-    if (urlParams.has('p')) {
-        post_uri_this = "/pages.php?p="
-    } else {
-        post_uri_this = "/" + parts[1] + "/";
+    if (!config || !config.page_uri || config.error_show === undefined || config.page_ext === undefined) {
+        console.error("設定オブジェクトが不正です。");
+        return;
     }
-    if (!url.startsWith(post_uri_this)) {
-        $("main").fadeOut(300, function () {
-            $.ajax({
-                url: url,
-                dataType: 'html',
-                success: function (html) {
-                    $("html main").html($(html).filter("main"));
-                    document.title = $(html).filter("title").text();
-                    window.history.pushState({}, $(html).filter("title").text(), url);
-                    const contentElements = document.getElementsByClassName('post');
-                    if (contentElements.length > 0) {
-                        openExternalLinksInNewTab(contentElements[0]);
-                    }
-                    $("main").fadeIn(300);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.error('Failed to fetch', url);
-                    console.error('Status:', textStatus);
-                    console.error('Error:', errorThrown);
-                }
-            });
-        })
-    } else if (url.startsWith(post_uri_this)) {
-        if (post_uri_this.includes(".php")) {
-            let query = url.substring(url.indexOf('?'));
-            const urlParams = new URLSearchParams(query);
-            var postId = urlParams.get('p');
-        } else {
-            const parts = url.split("/");
-            var postId = parts[2];
-        }
 
-        $("main").fadeOut(300, async function () {
-            if ($("html").attr("oldpage") != "/") {
-                return
-            }
-            await loadPostPage(postId, url)
-                .then(() => {
-                    $("main").fadeIn(300);
-                })
-                .catch((error) => {
-                    console.error("投稿ページの読み込みに失敗しました:", error);
-                    $("main").show();
+    const pageUriParts = config.page_uri.split("/");
+    const query = url.substring(url.indexOf('?'));
+    const urlParams = new URLSearchParams(query);
+    const postId = urlParams.get('p') || url.split("/")[2];
+    const isPostPage = url.startsWith(urlParams.has('p') ? "/pages.php?p=" : `/${pageUriParts[1]}/`);
+
+    $("main, .footer-nav").fadeOut(300, async () => {
+        try {
+            if (!isPostPage) {
+                const response = await $.ajax({
+                    url: url,
+                    dataType: 'html',
                 });
-        })
-    }
+                $("html main").html($(response).filter("main"));
+                document.title = $(response).filter("title").text();
+                window.history.pushState({}, document.title, url);
+                $("main,.footer-nav").fadeIn(300)
+                const contentElements = document.getElementsByClassName('post');
+                if (contentElements.length > 0) {
+                    pageInit(contentElements[0]);
+                }
+            } else {
+                await loadPostPage(postId, url)
+            }
+        } catch (error) {
+            console.error("コンテンツのロードに失敗しました:", error);
+            if (isPostPage) {
+                const errorMessage = config.error_show == 1 ? `投稿ページの読み込みに失敗しました。404ページを表示します。エラー: ${error}` : "投稿ページの読み込みに失敗しました。404ページを表示します。";
+                console.error(errorMessage);
+                const notFoundPage = config.page_ext == 1 ? "/404.php" : "/404/";
+                try {
+                    await loadContent(notFoundPage);
+                    if (window.location.pathname + window.location.search !== notFoundPage) {
+                        window.history.replaceState({}, "", location.href);
+                    }
+                    $("main, .footer-nav").fadeIn(300);
+                } catch (notFoundError) {
+                    console.error("404ページのロードにも失敗しました:", notFoundError);
+                    $("main, .footer-nav").fadeIn(300);
+                }
+            } else {
+                console.error("ページのロードに失敗しました:", error);
+                $("main, .footer-nav").fadeIn(300);
+            }
+        }
+    });
 }

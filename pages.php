@@ -49,13 +49,21 @@ if (preg_match('/' . $pattern_list_string . '/', $ua)) {
     <title><?php echo htmlspecialchars($info['title']); ?> - <?php echo htmlspecialchars($config['site_name']); ?></title>
     <meta name="description" content="<?= htmlspecialchars($info['excerpt']); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <meta property="og:title" content="<?= htmlspecialchars($info['title']); ?>">
     <meta property="og:type" content="website">
     <meta property="og:url" content="<?= htmlspecialchars($config['site_uri'] . getPostUri($pageId, $config)); ?>">
     <meta property="og:description" content="<?= htmlspecialchars($info['excerpt']); ?>">
     <meta property="og:site_name" content="<?= htmlspecialchars($config['site_name']); ?>">
+    <?php
+    if (isset($info['titlethumb'])) {
+        $thumbDir  = htmlspecialchars(rtrim($config["site_uri"], "/")) . "/" . $config["pages_dir"] . "/" . basename($pageId) . "/";
+        $thumb = (strpos($info['titlethumb'], '/') === 0) ? $info['titlethumb'] : $thumbDir . $info['titlethumb'];
+    ?>
+        <meta property="og:image" content="<?= htmlspecialchars($thumb); ?>">
+    <?php
+    }
+    ?>
+    <?php echo renderMarkdownTemplate($config["templates_dir"] . '/html-head.md', $config); ?>
 </head>
 
 <body>
@@ -67,10 +75,16 @@ if (preg_match('/' . $pattern_list_string . '/', $ua)) {
                 <p class="post-date"><?php echo date("Y/m/d", strtotime($info["date"])); ?></p>
                 <div class="post-body"><?php echo $content; ?></div>
             </div>
-        <?php } ?>
+        <?php }; ?>
     </main>
-    <?= generateCssLinks();  ?>
-    <?= generateJsLinks(); ?>
+    <?php echo renderMarkdownTemplate($config["templates_dir"] . '/footer.md', $config); ?>
+    <div id="loadArea" style="display:none;">
+        <?= generateCssLinks();  ?>
+        <?= generateJsLinks(); ?>
+        <?= generateCssLinks("custom-css.txt");  ?>
+        <?= generateJsLinks("custom-js.txt");  ?>
+        <?= loadPlugin(); ?>
+    </div>
 </body>
 
 </html>

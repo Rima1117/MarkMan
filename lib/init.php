@@ -31,17 +31,7 @@ if (file_exists("config.md")) {
 }
 if (!file_exists("config.md")) {
     $content = '';
-    $defaultConfig = [
-        'site_name' => 'MarkMan',
-        'pages_dir' => 'post-md',
-        'page_ext' => true,
-        'page_info' => 'init.md',
-        'page_body' => 'post.md',
-        'page_uri' => '/pages.php?p=$id',
-        'page_excerpt_count' => 128,
-        'templates_dir' => 'template-md',
-        'site_uri' => (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST']
-    ];
+    require("defaultConfig.php");
     foreach ($defaultConfig as $key => $value) {
         $content .= "$key: $value\n";
     }
@@ -85,7 +75,7 @@ if (isset($error_file[0]) || isset($success_file[0])) {
             </div>
         </div>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@latest/normalize.min.css">
-        <link rel="stylesheet" href="/assets/css/default.css?v=<?= time(); ?>">
+        <link rel="stylesheet" href="/assets/css/themes/default.css?v=<?= time(); ?>">
     </body>
 
     </html>

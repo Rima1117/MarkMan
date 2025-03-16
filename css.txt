@@ -1,3 +1,11 @@
-https://cdn.jsdelivr.net/npm/normalize.css@latest/normalize.min.css
-/assets/css/default.css
-https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&display=swap
+# 注意！
+# ここに独自でロードしたいCSSを記載すると、MarkManをアップデートしたときに設定が消失する可能性があります。
+
+!https://cdn.jsdelivr.net/npm/normalize.css@latest/normalize.min.css
+/assets/css/themes/default.css
+/assets/css/themes/default-mobile.css
+
+# テーマ/カスタムCSSのロードについて
+# MarkManがインストールされているディレクトリに「custom-css.txt」というファイルに、
+# そこにURLまたはテーマ・カスタムCSSファイルの場所（相対パス・URLのみ。絶対パスは不可。）を記載してください。
+# 詳細: https://md.ryouma.dev/docs/custom-assets-load/

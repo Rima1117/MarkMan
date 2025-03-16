@@ -1,0 +1,23 @@
+@charset "utf-8";
+/*
+  Theme Name: MarkMan default Theme for Mobile
+  Author: Ryoma Kaneko (Rima1117)
+  Author URI: https://www.ryouma.dev/
+  Version: 1.0.0
+  License: GNU General Public License v3
+  License URI: https://www.gnu.org/licenses/gpl-3.0.html
+*/
+
+@media screen and (max-width: 768px) {
+    .post img {
+        max-width: 100%;
+    }
+
+    .post-list a {
+        width: 100%;
+    }
+
+    .post-card {
+        width: auto;
+    }
+}
