@@ -23,7 +23,11 @@ async function initialize() {
             await loadPostPage(postId, window.location.pathname);
         }
 
+<<<<<<< HEAD
         $("main,.footer-nav,#mirror_message").fadeIn(300);
+=======
+        $("main,.footer-nav").fadeIn(300);
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
 
     } catch (error) {
         if (config.error_show == 1) {
@@ -33,7 +37,11 @@ async function initialize() {
         }
         const nfPage = config.page_ext == 1 ? "/404.php" : "/404/";
         await loadContent(nfPage).then(() => {
+<<<<<<< HEAD
             $("main,.footer-nav,#mirror_message").fadeIn(300, function () {
+=======
+            $("main,.footer-nav").fadeIn(300, function () {
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
                 if (window.location.pathname + window.location.search !== nfPage) {
                     window.history.replaceState({}, "", currrent);
                 }
@@ -103,6 +111,7 @@ async function getPostContent(pageId) {
         return null;
     }
 
+<<<<<<< HEAD
     if (config.pages_dir_uri == undefined) {
         pagesDir = "/" + config.pages_dir;
     } else {
@@ -110,6 +119,11 @@ async function getPostContent(pageId) {
     }
     const bodyFileName = config.page_body;
     const postPath = `${pagesDir}/${pageId}/${bodyFileName}?v=${Date.now()}`;
+=======
+    const pagesDir = config.pages_dir;
+    const bodyFileName = config.page_body;
+    const postPath = `/${pagesDir}/${pageId}/${bodyFileName}?v=${Date.now()}`;
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
 
     try {
         const markdown = await $.ajax({
@@ -124,7 +138,11 @@ async function getPostContent(pageId) {
         console.error("コンテンツの取得に失敗しました。404ページに移動します。\nエラー:", error);
         const nfPage = config.page_ext == 1 ? "/404.php" : "/404/";
         await loadContent(nfPage).then(() => {
+<<<<<<< HEAD
             $("main,.footer-nav,#mirror_message").fadeIn(300, function () {
+=======
+            $("main,.footer-nav").fadeIn(300, function () {
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
                 if (window.location.pathname + window.location.search !== nfPage) {
                     window.history.replaceState({}, "", currrent);
                 }
@@ -140,6 +158,7 @@ async function getPostMeta(pageId) {
         return null;
     }
 
+<<<<<<< HEAD
     if (config.pages_dir_uri == undefined) {
         pagesDir = "/" + config.pages_dir;
     } else {
@@ -147,6 +166,11 @@ async function getPostMeta(pageId) {
     }
     const metaFileName = config.page_info;
     const postPath = `${pagesDir}/${pageId}/${metaFileName}?v=${Date.now()}`;
+=======
+    const pagesDir = config.pages_dir;
+    const metaFileName = config.page_info;
+    const postPath = `/${pagesDir}/${pageId}/${metaFileName}?v=${Date.now()}`;
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
 
     try {
         const meta = await loadConfig(postPath);
@@ -223,7 +247,11 @@ async function loadPostPage(postId, url) {
         }
 
         window.history.pushState({}, postMeta.title + " - " + config.site_name, url_post_id);
+<<<<<<< HEAD
         $("main,.footer-nav,#mirror_message").fadeIn(300);
+=======
+        $("main,.footer-nav").fadeIn(300);
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
         $("html").attr("oldpage", "/");
         document.title = postMeta.title + " - " + config.site_name;
 
@@ -253,7 +281,11 @@ async function loadContent(url) {
     const postId = urlParams.get('p') || url.split("/")[2];
     const isPostPage = url.startsWith(urlParams.has('p') ? "/pages.php?p=" : `/${pageUriParts[1]}/`);
 
+<<<<<<< HEAD
     $("main, .footer-nav,#mirror_message").fadeOut(300, async () => {
+=======
+    $("main, .footer-nav").fadeOut(300, async () => {
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
         try {
             if (!isPostPage) {
                 const response = await $.ajax({
@@ -263,7 +295,11 @@ async function loadContent(url) {
                 $("html main").html($(response).filter("main"));
                 document.title = $(response).filter("title").text();
                 window.history.pushState({}, document.title, url);
+<<<<<<< HEAD
                 $("main,.footer-nav,#mirror_message").fadeIn(300)
+=======
+                $("main,.footer-nav").fadeIn(300)
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
                 const contentElements = document.getElementsByClassName('post');
                 if (contentElements.length > 0) {
                     pageInit(contentElements[0]);
@@ -282,6 +318,7 @@ async function loadContent(url) {
                     if (window.location.pathname + window.location.search !== notFoundPage) {
                         window.history.replaceState({}, "", location.href);
                     }
+<<<<<<< HEAD
                     $("main, .footer-nav,#mirror_message").fadeIn(300);
                 } catch (notFoundError) {
                     console.error("404ページのロードにも失敗しました:", notFoundError);
@@ -301,6 +338,16 @@ async function loadContent(url) {
                     console.error("404ページのロードにも失敗しました:", notFoundError);
                     $("main, .footer-nav,#mirror_message").fadeIn(300);
                 }
+=======
+                    $("main, .footer-nav").fadeIn(300);
+                } catch (notFoundError) {
+                    console.error("404ページのロードにも失敗しました:", notFoundError);
+                    $("main, .footer-nav").fadeIn(300);
+                }
+            } else {
+                console.error("ページのロードに失敗しました:", error);
+                $("main, .footer-nav").fadeIn(300);
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
             }
         }
     });

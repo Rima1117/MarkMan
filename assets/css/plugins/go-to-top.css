@@ -14,7 +14,10 @@
     transition: .15s;
     transition-property: background-color,border,transform,fill,stroke;
     display: none;
+<<<<<<< HEAD
     z-index: 256;
+=======
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
 }
 
 .page-top-button svg {

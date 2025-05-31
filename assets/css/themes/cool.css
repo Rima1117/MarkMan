@@ -117,6 +117,7 @@ header.nav.active {
 
 .post-card p {
   opacity: .8;
+<<<<<<< HEAD
 }
 
 p#mirror_message {
@@ -127,4 +128,6 @@ p#mirror_message {
   z-index: 1;
   margin-bottom: -1px;
   border-bottom: 1px solid var(--bg-secondary);
+=======
+>>>>>>> 14074ffbd625005bb1c8569cadfd3d72e261a83b
 }
