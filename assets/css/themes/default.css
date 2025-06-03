@@ -86,6 +86,8 @@ body {
 
 main {
     flex: 1;
+    padding-top: 24px;
+    padding-bottom: 24px;
 }
 
 a {
@@ -138,7 +140,7 @@ header.nav .nav-title h1 {
     margin-right: auto;
     padding-top: 24px;
     padding-bottom: 24px;
-    gap: 12px;
+    gap: 24px;
     justify-content: center;
 }
 
@@ -162,6 +164,8 @@ header.nav .nav-title h1 {
     display: flex;
     flex-direction: column;
     transition: .15s;
+    border: 1px solid transparent;
+
 }
 
 .post-card h2 {
@@ -181,6 +185,7 @@ header.nav .nav-title h1 {
 
 .post-card:hover {
     transform: translateY(-6px);
+    border: 1px solid var(--border);
 }
 
 .post {
@@ -285,5 +290,30 @@ button:hover {
 }
 
 .latest-post-header {
+    text-align: center;
+}
+
+.post-card-thumb {
+    text-align: center;
+    width: 100%;
+    height: fit-content;
+    background-color: var(--bg-secondary);
+    border-radius: 14px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    padding-bottom: 16px;
+}
+
+.post-card-thumb-text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg);
+    border-radius: 14px;
+    font-size: 200%;
+    font-weight: 600;
+    color: var(--text);
     text-align: center;
 }

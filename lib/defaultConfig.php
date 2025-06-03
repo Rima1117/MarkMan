@@ -13,11 +13,13 @@ $defaultConfig = [
     'page_uri' => '/pages.php?p=$id',
     'page_excerpt_count' => 128,
     'templates_dir' => 'template-md',
+    "default_thumb_uri" => "",
     'site_uri' => (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'],
     "copyright" => '© $year ' . $domain,
     "error_show" => 0,
     "page_excerpt_ellipsis" => "…",
     "date_format" => "Y/m/d",
+    "time_format" => "H:i",
     "mirror_message" => 0,
     "site_page_title" => '$title - $site_name',
     "footer_version" => 0

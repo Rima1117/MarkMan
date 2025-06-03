@@ -60,7 +60,7 @@ header.nav {
 }
 
 header.nav.active {
-  background-color: rgba(var(--bg-secondary-r), 0.4);
+  background-color: rgba(var(--bg-secondary-r), 0.8);
   backdrop-filter: var(--blur-nav);
   -webkit-backdrop-filter: var(--blur-nav);
   border-bottom: 1px solid var(--border);

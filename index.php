@@ -48,6 +48,36 @@ uasort($pageList, 'compareDates');
             <?php foreach ($pageList as $pageId => $info): ?>
                 <a href="<?= str_replace("%3D", "=", str_replace("%3F", "?", str_replace('%2F', '/', rawurlencode(getPostUri($pageId))))); ?>">
                     <div class="post-card">
+                        <?php
+                        // アイキャッチ画像の取得と表示
+                        if (isset($info["titlethumb"]) && !empty($info["titlethumb"])) {
+                            $thumb_uri = $info["titlethumb"];
+                            // アイキャッチ画像が設定されている場合はそのURIを使用してアイキャッチ画像を表示
+                            if (isset($info["titlethumb"]) && !empty($info["titlethumb"])) {
+                                $thumb_uri = $info["titlethumb"];
+                            } elseif (isset($info["titlethumb"]) && !empty($info["titlethumb"])) {
+                                // ファイルパスが設定されている場合はそのパスを使用
+                                $thumb_uri = $config["pages_dir_uri"] . '/' .$info["id"]. '/' . $info["titlethumb"];
+                            }
+                        ?>
+                            <div class="post-card-thumb">
+                                <img src="<?= htmlspecialchars($thumb_uri); ?>" alt="<?= htmlspecialchars($info['title']); ?>" loading="lazy" decoding="async" class="post-card-thumb-img">
+                            </div>
+                            <?php
+                        } else {
+                            // アイキャッチ画像が設定されていない場合はデフォルトのサムネイルを取得
+                            if (isset($config["default_thumb_uri"]) && !empty($config["default_thumb_uri"])) {
+                                $thumb_uri = $config["default_thumb_uri"];
+                            } else {
+                                // デフォルトのサムネイルURIが設定されていない場合はHTMLベースのサムネイルを生成
+                            ?>
+                                <div class="post-card-thumb">
+                                    <span class="post-card-thumb-text">No Images</span>
+                                </div>
+                        <?php
+                            }
+                        }
+                        ?>
                         <h2 title="<?= htmlspecialchars($info['title']); ?>"><?= htmlspecialchars($info['title']); ?></h2>
                         <p title="<?= htmlspecialchars($info['excerpt']); ?>"><?= htmlspecialchars($info['excerpt']); ?></p>
                         <?php
