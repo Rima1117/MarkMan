@@ -57,7 +57,7 @@ uasort($pageList, 'compareDates');
                                 $thumb_uri = $info["titlethumb"];
                             } elseif (isset($info["titlethumb"]) && !empty($info["titlethumb"])) {
                                 // ファイルパスが設定されている場合はそのパスを使用
-                                $thumb_uri = $config["pages_dir_uri"] . '/' .$info["id"]. '/' . $info["titlethumb"];
+                                $thumb_uri = $config["pages_dir_uri"] . '/' .$pageId. '/' . $info["titlethumb"];
                             }
                         ?>
                             <div class="post-card-thumb">
