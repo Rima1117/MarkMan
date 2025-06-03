@@ -317,3 +317,11 @@ button:hover {
     color: var(--text);
     text-align: center;
 }
+
+.post-card-thumb img.post-card-thumb-img {
+    object-fit: cover;
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+}

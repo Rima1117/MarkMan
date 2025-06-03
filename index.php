@@ -54,10 +54,7 @@ uasort($pageList, 'compareDates');
                             $thumb_uri = $info["titlethumb"];
                             // アイキャッチ画像が設定されている場合はそのURIを使用してアイキャッチ画像を表示
                             if (isset($info["titlethumb"]) && !empty($info["titlethumb"])) {
-                                $thumb_uri = $info["titlethumb"];
-                            } elseif (isset($info["titlethumb"]) && !empty($info["titlethumb"])) {
-                                // ファイルパスが設定されている場合はそのパスを使用
-                                $thumb_uri = $config["pages_dir_uri"] . '/' .$pageId. '/' . $info["titlethumb"];
+                                $thumb_uri = $config["pages_dir_uri"] . '/' . $pageId . '/' . $info["titlethumb"];
                             }
                         ?>
                             <div class="post-card-thumb">
