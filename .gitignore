@@ -4,3 +4,4 @@
 .htaccess
 /post-md/*
 !/post-md/hello-world
+._*
