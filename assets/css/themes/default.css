@@ -196,7 +196,8 @@ header.nav .nav-title h1 {
     padding-bottom: 8px;
 }
 
-button {
+button,
+.button {
     background-color: transparent;
     color: var(--text);
     border: 1px solid var(--border);
@@ -208,7 +209,8 @@ button {
     padding-right: 20px;
 }
 
-button:hover {
+button:hover,
+.button:hover {
     background-color: var(--bg-secondary);
     cursor: pointer;
 }
@@ -316,6 +318,12 @@ button:hover {
     font-weight: 600;
     color: var(--text);
     text-align: center;
+    user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -khtml-user-select: none;
 }
 
 .post-card-thumb img.post-card-thumb-img {
